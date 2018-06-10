@@ -44,7 +44,7 @@ void setup()
     while (!rf95.init())
     {
         Serial.println("LoRa radio init failed");
-        while (1)
+        while (1) 
             ;
     }
     Serial.println("LoRa radio init OK!");

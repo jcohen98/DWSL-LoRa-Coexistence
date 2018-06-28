@@ -84,6 +84,17 @@ void loop()
     }
     else
     {
+
+        if (Serial.available())
+        {
+            String in = Serial.readString();
+            Serial.println("Reading:" + in);
+            if (in.startsWith("Set"))
+            {
+                Serial.println(rf95.printRegisters());
+                rf95.setModemRegisters({0x72, 0x74, 0x04})
+            }
+        }
         // Now wait for a reply
         uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
         uint8_t len = sizeof(buf);

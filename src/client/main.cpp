@@ -91,8 +91,42 @@ void loop()
             Serial.println("Reading:" + in);
             if (in.startsWith("Set"))
             {
+                int n = in.length();
+                // declaring character array
+                char char_array[n + 1];
+                char *regs[6];
+                int i = 0;
+                strcpy(char_array, in.c_str());
+                for (char *p = strtok(char_array, " "); p != NULL; p = strtok(NULL, " "))
+                {
+                    regs[i] = p;
+                    Serial.println(atoi(regs[i]));
+                    i = i + 1;
+                }
                 Serial.println(rf95.printRegisters());
-                rf95.setModemRegisters({0x72, 0x74, 0x04})
+                const RH_RF95::ModemConfig cfg = {
+                    // Register 0x1D:
+                    // BW         CR      1=implicit
+                    (0 << 4) | (2 << 1) | (1 << 0),
+                    // Register 0x1E:
+                    // SF
+                    (8 << 4),
+                    // Register 0x26:
+                    // bit3 = LowDataRateOptimization
+                    (1 << 3)};
+                const RH_RF95::ModemConfig cfg2 = {
+                    // Register 0x1D:
+                    // BW                           CR                  1=implicit
+                    (0 << atoi(regs[1])) | (2 << atoi(regs[2])) | (1 << atoi(regs[3])),
+                    // Register 0x1E:
+                    // SF
+                    (8 << atoi(regs[4])),
+                    // Register 0x26:
+                    // bit3 = LowDataRateOptimization
+                    (1 << atoi(regs[5]))};
+
+                rf95.setModemRegisters(&cfg2);
+                Serial.println(rf95.printRegisters());
             }
         }
         // Now wait for a reply
